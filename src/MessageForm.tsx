@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { FormStatus, Message } from "./types";
+import { sendSMS, SendSMSResponse } from "./service";
+import { FormStatus, MessageResponse } from "./types";
 
 interface Props {
-  msgSentCallback: (message: Message) => void;
+  msgSentCallback: (response: MessageResponse) => void;
 }
 
 type Feedback = {
@@ -44,8 +45,8 @@ const MessageForm: React.FC<Props> = ({msgSentCallback}) => {
   const [message, setMessage] = React.useState<string>("");
   const [formStatus, setFormStatus] = React.useState<FormStatus>(FormStatus.Standby);
   const [feedback, setFeedback] = React.useState<Feedback>(defaultFeedback);
-  const isDisableForm = formStatus === FormStatus.Sending || formStatus === FormStatus.Fail;
-  const recipientRef = React.createRef<HTMLInputElement>();
+  const [smsThreshold, setSmsThreshold] = React.useState(3);
+  const isDisableForm = formStatus === FormStatus.Sending || formStatus === FormStatus.Disabled;
   const clearForm = () => {
     setRecipient("");
     setMessage("");
@@ -59,7 +60,7 @@ const MessageForm: React.FC<Props> = ({msgSentCallback}) => {
   }, [formStatus, recipient]);
   return ( 
     <div className="MessageForm">
-      <header>Send SMS</header>
+      <header>Send SMS [{smsThreshold} messages left]</header>
       <div className="flex-container">
         <div className="form-group">
           <label htmlFor="sender">Message will send from:</label>
@@ -67,10 +68,9 @@ const MessageForm: React.FC<Props> = ({msgSentCallback}) => {
         </div>
         <div className="form-group">
           <label htmlFor="recipient">Enter your phone number:</label>
-          <input type="tel" ref={recipientRef} id="recipient" value={recipient} placeholder="61412345678" onChange={(e)=>{
+          <input type="tel" id="recipient" value={recipient} placeholder="61412345678" onChange={(e)=>{
             setRecipient(e.target.value);
           }} />
-          {recipientRef.current && <p className="error">Please check your input for field `{recipientRef.current.id}`</p>}
         </div>
         <div className="form-group">
           <label htmlFor="message">Input your message here:</label>
@@ -83,11 +83,22 @@ const MessageForm: React.FC<Props> = ({msgSentCallback}) => {
                 return;
               }
               setFormStatus(FormStatus.Sending);
-              // TODO: update with service call
-              setTimeout(()=>{
-                setFormStatus(FormStatus.Success);
-                msgSentCallback({sender,body: message,recipient});
-              },2000);
+              sendSMS(sender,recipient,message)
+              .then(({id, sender, recipient, message, created_at, sms_count}: SendSMSResponse)=>{
+                const messageLeft = smsThreshold - 1;
+                setFormStatus(messageLeft > 0 ? FormStatus.Success : FormStatus.Disabled);
+                setSmsThreshold(messageLeft);
+                msgSentCallback({
+                  id,
+                  recipient,
+                  message,
+                  sender,
+                  receiveAt:created_at,
+                  cost: sms_count
+                });
+              }).catch(() => {
+                setFormStatus(FormStatus.Fail);
+              })
           }} disabled={isDisableForm}>Submit</button>
           <button onClick={clearForm} disabled={isDisableForm}>Clear Form</button>
         </div>

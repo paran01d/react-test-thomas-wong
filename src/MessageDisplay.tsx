@@ -16,21 +16,25 @@ const MessageDisplay: React.FC<Props> = ({messageList,clearMsgList}) => {
             <tr>
               <th>Recipient</th>
               <th>Message</th>
+              <th>Cost</th>
               <th>Receive at</th>
             </tr>
           </thead>
           <tbody>
-          {messageList.map(({body,recipient, receiveAt})=> {
+          {messageList.map(({message,cost,recipient,receiveAt,id})=> {
             return (
-              <tr key={recipient}>
+              <tr key={id}>
                 <td>
                   {recipient} 
                 </td>
                 <td>
-                  {body} 
+                  {message} 
                 </td>
                 <td>
-                  {receiveAt.toLocaleTimeString()}
+                  {cost} 
+                </td>
+                <td>
+                  {new Date(receiveAt).toLocaleTimeString()}
                 </td>
               </tr>
             )

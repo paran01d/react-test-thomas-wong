@@ -1,18 +1,19 @@
 export enum FormStatus {
-    Standby,
-    Sending,
-    Fail,
-    Success
-  }
-  
-  export type Message = {
-    sender: string,
-    recipient: string,
-    body: string,
-  }
+  Standby,
+  Sending,
+  Fail,
+  Success,
+  Disabled,
+}
 
-  export type MessageResponse = {
-    status: FormStatus.Fail | FormStatus.Success;
-    receiveAt: Date;
-  } & Message;
-  
+export type Message = {
+  sender: string,
+  recipient: string,
+  message: string,
+}
+
+export type MessageResponse = {
+  id: string;
+  receiveAt: string;
+  cost: number;
+} & Message;

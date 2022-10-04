@@ -4,4 +4,69 @@
 
 .MessageDisplay, .MessageForm {
   flex-grow: 1;
+  padding: 0.5rem;
+  max-width: 50%;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: .5rem;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+header {
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  margin-bottom: .5rem;
+}
+
+.form-group textarea {
+  height: 10rem;
+  resize: none;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border: 1px solid #000;
+  box-shadow: none;
+  height: 3rem;
+  border-radius: .5rem;
+  cursor: pointer;
+}
+
+input, textarea {
+  border-radius: .25rem;
+  min-height: 2rem;
+  padding: .5rem;
+  box-shadow: none;
+}
+
+.error {
+  border: 1px solid red;
 }
